@@ -1,9 +1,12 @@
 from pathlib import Path
 
-from fastapi import APIRouter, File, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Query, UploadFile
+from sqlalchemy.orm import Session
 
+from app.db.database import get_db
 from app.schemas.upload import UploadResponse
 from app.services.chunking_service import ChunkingService
+from app.services.database_service import DatabaseService
 from app.services.document_service import DocumentService
 
 router = APIRouter(
@@ -13,12 +16,14 @@ router = APIRouter(
 
 document_service = DocumentService()
 chunking_service = ChunkingService()
+database_service = DatabaseService()
 
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_document(
     file: UploadFile = File(...),
     strategy: str = Query("fixed", enum=["fixed", "paragraph"]),
+    db: Session = Depends(get_db),
 ):
     result = await document_service.save_upload(file)
 
@@ -31,7 +36,10 @@ async def upload_document(
     else:
         chunks = chunking_service.fixed_size_chunking(extracted_text)
 
-    print(f"Created {len(chunks)} chunks")
+    database_service.save_document(
+        db=db,
+        document_data=result,
+    )
 
     return UploadResponse(
         success=True,
@@ -39,5 +47,5 @@ async def upload_document(
         filename=result["filename"],
         content_type=result["content_type"],
         size_bytes=result["size_bytes"],
-        message=f"Document uploaded successfully. Created {len(chunks)} chunks.",
+        message=f"Uploaded successfully. Created {len(chunks)} chunks.",
     )

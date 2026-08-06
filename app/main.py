@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 
 from app.api.upload import router as upload_router
+from app.db.database import Base, engine
+from app.models.document import Document
+
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Palm Mind AI Assignment",
