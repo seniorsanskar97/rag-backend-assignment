@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, File, UploadFile
 
 from app.schemas.upload import UploadResponse
@@ -15,8 +17,17 @@ document_service = DocumentService()
 async def upload_document(file: UploadFile = File(...)):
     result = await document_service.save_upload(file)
 
+    extracted_text = document_service.extract_text(
+        Path(result["file_path"])
+    )
+
+    print(f"Extracted {len(extracted_text)} characters")
+
     return UploadResponse(
         success=True,
-        message="Document uploaded successfully.",
-        **result,
+        document_id=result["document_id"],
+        filename=result["filename"],
+        content_type=result["content_type"],
+        size_bytes=result["size_bytes"],
+        message=f"Document uploaded successfully. Extracted {len(extracted_text)} characters.",
     )
