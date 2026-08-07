@@ -46,5 +46,17 @@ class QdrantService:
             points=points,
         )
 
+    def search(self, embedding, limit=5):
+        results = self.client.query_points(
+            collection_name=QDRANT_COLLECTION,
+            query=embedding,
+            limit=limit,
+        )
+
+        return [
+            point.payload["text"]
+            for point in results.points
+        ]
+
 
 qdrant_service = QdrantService()
