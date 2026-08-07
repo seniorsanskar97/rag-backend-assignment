@@ -1,4 +1,9 @@
+.env
 .venv/
 __pycache__/
-*.pyc
-.env
+*.db
+app/uploads/
+test.py
+test_llm.py
+test_qdrant.py
+list_models.py
