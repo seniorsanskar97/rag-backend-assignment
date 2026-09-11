@@ -1,4 +1,4 @@
-# Palm Mind AI Backend Assignment
+
 
 This repository contains my solution for the Palm mind Internship Assignment.
 
