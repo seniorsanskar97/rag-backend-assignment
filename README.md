@@ -1,6 +1,6 @@
 
 
-This repository contains my solution for the Palm mind Internship Assignment.
+
 
 ## Tech Stack
 
